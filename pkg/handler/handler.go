@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"forevermzm/blockchain/pkg/core"
 	"net/http"
 )
@@ -19,10 +18,7 @@ func HandleBlockchain(w http.ResponseWriter, req *http.Request) {
 }
 
 func handleGetBlockchain(w http.ResponseWriter, req *http.Request) {
-	for i := range Blockchain.Chain {
-		block := Blockchain.Chain[i]
-		fmt.Fprint(w, block)
-	}
+	json.NewEncoder(w).Encode(Blockchain)
 }
 
 func handlePostBlockchain(w http.ResponseWriter, req *http.Request) {
