@@ -1,8 +1,13 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"forevermzm/blockchain/pkg/core"
+	"forevermzm/blockchain/pkg/handler"
 	"log"
+	"net/http"
+	"os"
 )
 
 func main() {
@@ -15,10 +20,20 @@ func main() {
 		LastName:  "World",
 		Age:       0,
 	})
-	log.Println(genesisBlock)
+	handler.Blockchain = core.Blockchain{
+		Chain: []core.Block{
+			genesisBlock,
+		},
+	}
+	log.Println(handler.Blockchain)
 
-	currBlock := core.CreateBlock(genesisBlock, core.Person{"Good", "Boy", 2})
-	valid := core.ValidateBlock(genesisBlock, currBlock)
-	log.Println(currBlock)
-	log.Printf("It is a valid block: %t", valid)
+	http.HandleFunc("/blockchain", handler.HandleBlockchain)
+
+	err := http.ListenAndServe(":8090", nil)
+	if errors.Is(err, http.ErrServerClosed) {
+		fmt.Printf("server closed\n")
+	} else if err != nil {
+		fmt.Printf("error starting server: %s\n", err)
+		os.Exit(1)
+	}
 }
